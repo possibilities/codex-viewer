@@ -1,7 +1,18 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-repository_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+launcher_path="${BASH_SOURCE[0]}"
+while [[ -L "$launcher_path" ]]; do
+    launcher_directory="$(cd -- "$(dirname -- "$launcher_path")" && pwd)"
+    link_target="$(readlink "$launcher_path")"
+    if [[ "$link_target" == /* ]]; then
+        launcher_path="$link_target"
+    else
+        launcher_path="$launcher_directory/$link_target"
+    fi
+done
+
+repository_root="$(cd -- "$(dirname -- "$launcher_path")/.." && pwd)"
 viewer_binary="${CODEX_VIEWER_BINARY:-$repository_root/.build/codex-viewer}"
 
 if [[ ! -x "$viewer_binary" ]]; then
