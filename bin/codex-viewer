@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repository_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+viewer_binary="${CODEX_VIEWER_BINARY:-$repository_root/.build/codex-viewer}"
+
+if [[ ! -x "$viewer_binary" ]]; then
+    printf 'codex-viewer is not built. Run: %s/scripts/setup.sh\n' "$repository_root" >&2
+    exit 1
+fi
+
+exec "$viewer_binary" "$@"

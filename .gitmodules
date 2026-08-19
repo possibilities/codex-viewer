@@ -1,0 +1,4 @@
+[submodule "codex"]
+	path = codex
+	url = https://github.com/possibilities/codex.git
+	branch = codex-viewer
