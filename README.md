@@ -2,7 +2,7 @@
 
 `codex-viewer` is a chromeless, read-only terminal viewer for saved and ongoing [Codex](https://github.com/openai/codex) sessions. It renders the native Codex conversation cells without a composer or other harness chrome, follows new conversation entries in real time, and keeps manual scroll position until you return to the tail.
 
-The viewer implementation lives on the `codex-viewer` branch of the `possibilities/codex` fork. This repository provides the top-level `codex-viewer` command and pins a tested Codex revision through the `codex/` submodule.
+The viewer implementation lives on the [`codex-viewer`](https://github.com/possibilities/codex/tree/codex-viewer) branch of the public Codex fork. This repository provides the top-level `codex-viewer` command and pins a tested Codex revision through the `codex/` submodule.
 
 ## Install from source
 
@@ -78,6 +78,7 @@ cd ../..
 git -C codex push origin codex-viewer
 git add codex
 git commit -m "chore: update Codex viewer core"
+git push
 ```
 
 The outer repository pins an exact Codex commit. Consumers do not move to a newer fork revision until that submodule pointer is reviewed and committed here.
