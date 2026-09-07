@@ -61,9 +61,10 @@ Draft text updates in place, and native completion replaces it with canonical
 text. Whitespace is trimmed for display only. Items are isolated by controller
 instance, runtime generation, conversation and item identity. Unknown-speaker
 deltas wait for a canonical item. Recording interruptions mark partial messages
-incomplete, and recording boundaries appear as notices. A file belongs to one
-conversation: Fresh creates a new file; redials append. Open the new path after
-Fresh. Ctrl+C exits the viewer without stopping voice or recording.
+incomplete. The chat fills the pane without recording notices, a header, or a
+footer. A file belongs to one conversation: Fresh creates a new file; redials
+append. Open the new path after Fresh. Ctrl+C exits the viewer without stopping
+voice or recording; q and Ctrl+Q do not close it.
 
 The AgentVoice JSONL format has a `voice_transcript` header (`format: "agentvoice"`,
 `workspace`, `threadId`), original `voice.item.*` event envelopes, and
@@ -72,9 +73,9 @@ carries observer `observedAt` time. The event envelopes use AgentVoice's current
 contract (`v: 2`). No speech backfill or complete-delivery guarantee is implied;
 these are observed text events, not evidence that audio playback finished.
 
-The reader polls every 100 ms, waits for complete newline-terminated records,
-and labels an unfinished tail in saved playback. Malformed records, truncation,
-or file replacement produce explicit errors. Reopen after truncation/replacement.
+The reader polls every 100 ms and displays only complete newline-terminated
+records. Malformed records, truncation, or file replacement produce explicit
+errors. Reopen after truncation/replacement.
 Limits: 1 MiB per record, 256 KiB per message, 64 MiB total text and 100,000 entries.
 Recordings are independent of Codex history and are never sent to a model.
 
