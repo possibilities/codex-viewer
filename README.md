@@ -66,6 +66,10 @@ footer. A file belongs to one conversation: Fresh creates a new file; redials
 append. Open the new path after Fresh. Ctrl+C exits the viewer without stopping
 voice or recording; q and Ctrl+Q do not close it.
 
+An empty voice transcript shows a centered “Waiting for voice messages…” placeholder
+until user or assistant text arrives. Empty items and unknown-speaker deltas keep
+the placeholder visible.
+
 The AgentVoice JSONL format has a `voice_transcript` header (`format: "agentvoice"`,
 `workspace`, `threadId`), original `voice.item.*` event envelopes, and
 `recording.started`, `recording.gap`, and `recording.ended` markers. Each record
