@@ -128,7 +128,7 @@ new branch names. Source paths below are relative to `codex/codex-rs/`.
 | V5 | When a local rollout is unavailable, native app-server reads provide the latest full turn, including in-progress assistant deltas, without resuming the thread or starting a turn. Poll at 250 ms while following; merge replacements without duplicates. Scope: `app-server/src/thread_state.rs`, `request_processors/thread_processor.rs`, `tui/src/app_server_session/history.rs`. | `turns_list_includes_streaming_assistant_text_in_latest_page` exercises the public RPC, active-turn text, full items, and pagination. |
 | V6 | Explicit AgentVoice file reader bypasses app-server and native session lookup, reusing native user/assistant cells and normal display config. Accept the documented `voice_transcript` header and v2 event envelopes; isolate items by producer, generation, conversation, and item ID. Completion replaces drafts; unknown-speaker deltas wait; interruptions mark unfinished text incomplete. Scope: `session_viewer/voice_transcript.rs`, `voice_viewer.rs`. | Voice reducer, CLI, and snapshot tests; saved and growing file smoke. |
 | V7 | Voice pane has no header/footer or recording notices. Center “Waiting for voice messages…” until user or assistant text exists. Ctrl-C closes only the viewer; q/Ctrl-Q do not close voice viewing. Follow complete records at 100 ms; reject malformed input, truncation, replacement, identity changes, and over-budget input (1 MiB/record, 256 KiB/message, 64 MiB total text, 100,000 entries). Scope: voice reader/viewer and their tests. | Empty/first-message snapshots, split UTF-8, replacement/truncation, identity and size tests; terminal smoke. |
-| V8 | Keep the small non-product adaptations needed to validate this fork visible: debug/release command-popup snapshot selection, precise pet payload assertion, and current update-prompt snapshot. Scope: `tui/src/bottom_pane/command_popup.rs`, `pets/mod.rs`, corresponding snapshots. | Full `codex-tui` suite; inspect these against upstream each cycle and remove in forward commits when equivalent fixes arrive. |
+| V8 | Keep the small non-product adaptations needed to validate this fork visible: debug/release command-popup snapshot selection, precise pet payload assertion, current update-prompt snapshot, and deterministic exploring-indicator snapshot. Scope: `tui/src/bottom_pane/command_popup.rs`, `pets/mod.rs`, `chatwidget/tests/exec_flow.rs`, corresponding snapshots. | Full `codex-tui` suite; inspect these against upstream each cycle and remove in forward commits when equivalent fixes arrive. |
 
 V1–V7 retire only when upstream supplies their complete behavior at this
 standalone viewer boundary. V8 adaptations retire individually when unnecessary.
@@ -151,7 +151,12 @@ absolute workshop path if this checkout lives elsewhere:
 /Users/arthack/code/codex-viewer/scripts/gate.sh --worktree "$PWD"
 ```
 
-The gate runs `just test -p codex-tui -p codex-app-server`, then
+The gate first builds runtime helper binaries from `codex-cli`,
+`codex-code-mode-host`, `codex-rmcp-client`, `codex-exec-server`,
+`codex-shell-escalation`, and `codex-exec` in the isolated target. Tests run
+without inherited `NO_COLOR` or personal/system Git configuration so ANSI
+assertions and committed project-config fixtures are reproducible.
+It then runs `just test -p codex-tui -p codex-app-server`, then
 `just fix -p codex-tui -p codex-app-server`, then `just fmt`. It fails if fixes
 or formatting change the committed candidate; it does not rerun tests after
 those commands. It builds release through this workshop's `scripts/setup.sh`

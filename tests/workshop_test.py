@@ -58,11 +58,20 @@ if name == "git":
     os.execv(os.environ["TEST_GIT"], [os.environ["TEST_GIT"], *args])
 with open(os.environ["TEST_LOG"], "a") as log:
     log.write(json.dumps([name, args]) + "\\n")
+if name == "just" and args and args[0] == "test":
+    assert "NO_COLOR" not in os.environ
+    assert os.environ["GIT_CONFIG_GLOBAL"] == "/dev/null"
+    assert os.environ["GIT_CONFIG_NOSYSTEM"] == "1"
+    assert os.environ["GIT_CONFIG_COUNT"] == "1"
+    assert os.environ["GIT_CONFIG_KEY_0"] == "core.excludesFile"
+    assert os.environ["GIT_CONFIG_VALUE_0"] == "/dev/null"
 if name == "just" and args == ["fmt"] and os.environ.get("TEST_FMT_DIRTY"):
     pathlib.Path("Cargo.toml").write_text("# changed by formatter\\n")
 if name == "cargo":
     if os.environ.get("TEST_BUILD_FAIL"):
         sys.exit(17)
+    if "codex-viewer" not in args:
+        sys.exit(0)
     profile = "release" if "--release" in args else "debug"
     binary = pathlib.Path(os.environ["CARGO_TARGET_DIR"]) / profile / "codex-viewer"
     binary.parent.mkdir(parents=True, exist_ok=True)
@@ -139,9 +148,13 @@ if name == "cargo":
         self.run_script("reconcile-branches.sh", "--check", ok=False)
 
     def test_gate_orders_checks_and_does_not_select_consumer(self):
+        self.env["NO_COLOR"] = "1"
         self.run_script("gate.sh", "--worktree", str(self.codex))
         calls = [json.loads(line) for line in self.log.read_text().splitlines()]
         self.assertEqual(calls, [
+            ["cargo", ["build", "--locked", "-p", "codex-cli", "-p", "codex-code-mode-host",
+                       "-p", "codex-rmcp-client", "-p", "codex-exec-server",
+                       "-p", "codex-shell-escalation", "-p", "codex-exec", "--bins"]],
             ["just", ["test", "-p", "codex-tui", "-p", "codex-app-server"]],
             ["just", ["fix", "-p", "codex-tui", "-p", "codex-app-server"]],
             ["just", ["fmt"]],
@@ -155,7 +168,7 @@ if name == "cargo":
         self.env["TEST_FMT_DIRTY"] = "1"
         self.run_script("gate.sh", "--worktree", str(self.codex), ok=False)
         self.assertFalse((self.target / "viewer-gate.txt").exists())
-        self.assertNotIn('"cargo"', self.log.read_text())
+        self.assertNotIn('--release', self.log.read_text())
 
     def test_gate_fails_on_dirty_or_detached_candidate(self):
         (self.codex / "untracked").write_text("in progress")

@@ -55,7 +55,17 @@ receipt="$CODEX_VIEWER_TARGET_DIR/viewer-gate.txt"
 rm -f -- "$receipt"
 (
     cd "$candidate/codex-rs"
-    just test -p codex-tui -p codex-app-server
+    # Integration tests spawn helpers outside the selected test packages.
+    cargo build --locked -p codex-cli -p codex-code-mode-host -p codex-rmcp-client \
+        -p codex-exec-server -p codex-shell-escalation -p codex-exec --bins
+    # Personal ignore rules can silently omit project config from Git fixtures.
+    # Color assertions require ANSI output even when the calling agent disables it.
+    (
+        unset NO_COLOR
+        export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_NOSYSTEM=1
+        export GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=core.excludesFile GIT_CONFIG_VALUE_0=/dev/null
+        just test -p codex-tui -p codex-app-server
+    )
     just fix -p codex-tui -p codex-app-server
     just fmt
 )

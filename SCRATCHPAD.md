@@ -1,5 +1,48 @@
 # Codex Viewer maintenance state
 
+## Initial maintenance audit — 2026-09-08; delivery pending
+
+Audited-upstream frontier: `2ce38ae6d84a0aa96768742a5ac888a02ff622c7`.
+Read all 968 commits in the initial interval
+[`956f590ad549e75913894614ce0cbec4d5fd677a..2ce38ae6d84a0aa96768742a5ac888a02ff622c7`](https://github.com/openai/codex/compare/956f590ad549e75913894614ce0cbec4d5fd677a...2ce38ae6d84a0aa96768742a5ac888a02ff622c7).
+This establishes the first audit; the baseline below remains delivered state.
+
+Upstream adds richer native Markdown links, citations, complete patches and
+command output; paginated and compressed shared-lineage history; terminal
+restoration and tmux resize repairs; native WebRTC voice; memory v2, Guardian,
+MCP/authentication, sandbox and daemon changes. The native read-only resume
+fallback (#43253) still attempts resume and includes interactive retry/notices.
+It does not replace the standalone viewer. Native audio sessions likewise do
+not replace AgentVoice observer-file reading. No material stance change,
+retirement, upstream offer, or unresolved product decision.
+
+| Feature | Audit disposition and current evidence |
+| --- | --- |
+| V1 | Keep. Dedicated startup bypasses the interactive application; UUID/voice CLI and chromeless rendering tests passed in the initial gate. |
+| V2 | Repair fixture. Upstream #43676 adds `UserHistoryCell.spoken`; `a7a7778e80` sets the direct viewer fixture to false. Production uses updated native helpers. Native rendering and diff-background tests passed. |
+| V3 | Keep. Canonical rollout decoding, complete-record follow, bounded tail and asynchronous backfill remain required alongside upstream pagination/compression. Watcher tests passed. |
+| V4 | Keep. Upstream #43889/#43603 complement terminal restoration/resize. Standalone follow ownership, cached layout and mouse mapping remain required; unit checks passed, real-terminal proof pending. |
+| V5 | Keep. Stored-turn hydration still needs the carried live assistant overlay. The public streaming-turn pagination RPC test passed. README merge retained current upstream documentation plus the downstream API note. |
+| V6 | Keep. Explicit AgentVoice path still bypasses native startup and app-server; identity-aware reduction and completion replacement tests passed. |
+| V7 | Keep. Chromeless placeholder, independent lifetime and file integrity limits remain carried; unit checks passed, real-terminal proof pending. |
+| V8 | Repair fixture. Existing popup, pet and update-prompt adaptations remain necessary. `d1ed9d7b3a` disables animation in the Exploring snapshot so elapsed time cannot change its bullet. No snapshot expectation accepted. |
+
+Totals: six keep, two fixture repairs, zero retire. Candidate branch
+`maintain/viewer-20260908` in `/Volumes/Scratch/codex-viewer-maintain-20260908`
+merges the fixed upstream target and preserves the unpublished local viewer
+commits. Full native gate is in progress. The first run had 6,107 passes,
+44 failures and seven skips: missing runtime binaries, inherited `NO_COLOR`,
+personal Git excludes, and a time-dependent snapshot were diagnosed.
+Focused checks confirm all four cursor failures disappear without `NO_COLOR`
+and the managed-worktree fixture passes with explicit Git ignore isolation.
+The workshop gate now builds its runtime helpers and isolates these test inputs.
+
+Cycle evidence is local at `.git/maintain/20260908-cycle/`, including full
+commit messages, boundary review, gate logs and the feature ledger.
+Publication, consumer pin update, release receipt, terminal smoke and
+installation are pending. The prior publication, pin and selected binary remain
+unchanged; the known publication gap below has not yet been resolved.
+
 ## Baseline — reconstructed 2026-09-08
 
 This entry establishes the workshop from existing code and original
