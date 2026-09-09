@@ -22,7 +22,6 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: '0'
       V8_FROM_SOURCE: '1'
       PYTHON: python3
-      CODEX_VIEWER_GATE_TARGET_DIR: ${{ runner.temp }}/viewer-target
       CANDIDATE_SHA: ${{ inputs.candidate_sha }}
     steps:
       - uses: actions/checkout@v4
@@ -40,6 +39,7 @@ jobs:
       - name: Prepare named candidate and build tools
         shell: bash
         run: |
+          echo "CODEX_VIEWER_GATE_TARGET_DIR=$RUNNER_TEMP/viewer-target" >> "$GITHUB_ENV"
           git -C candidate switch -c ci-candidate
           test "$(git -C candidate rev-parse HEAD)" = "$CANDIDATE_SHA"
           xcodebuild -version
