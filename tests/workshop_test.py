@@ -125,7 +125,7 @@ if name == "cargo":
         self.run_script("reconcile-branches.sh", "--configure-supervision")
         self.assertEqual(before, self.git(self.codex, "show-ref"))
         self.assertEqual(self.git(self.codex, "config", "supervisor.trunk"), "codex-viewer")
-        self.assertEqual(self.git(self.root, "config", "supervisor.checkout"), str(self.codex))
+        self.assertEqual(self.git(self.root, "config", "supervisor.checkout"), str(self.codex.resolve()))
         self.run_script("reconcile-branches.sh", "--apply", ok=False)
 
     def test_check_accepts_published_ancestor_and_rejects_unpublished_pin(self):
