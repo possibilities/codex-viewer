@@ -1,5 +1,9 @@
 # Development Rules
 
+Read [CONTEXT.md](CONTEXT.md) for launcher, native session and recording terms,
+and [ADR 0001](docs/adr/0001-pin-the-native-conversation-renderer.md) before
+changing the fork or viewer boundary.
+
 - Keep this repository focused on the top-level `codex-viewer` launcher and maintained-fork workflow.
 - `codex/` is a submodule of `possibilities/codex`, pinned to its public `codex-viewer` branch.
 - Read and follow `codex/AGENTS.md` before changing code inside the submodule.
