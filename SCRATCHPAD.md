@@ -173,3 +173,17 @@ manually dispatched macOS gate using full Xcode and a source build of pinned
 V8. Candidate publication uses `viewer-ci/20260908-d1ed9d7b3a`, separate from
 `codex-viewer`. The existing consumer branch, pin and installation remain
 unchanged pending successful validation and terminal smoke.
+
+Candidate `d1ed9d7b3a47925a39887ca511c0d0a22cb63104` was pushed to that CI
+branch before publishing the workshop workflow. The consumer branch was not
+moved. Workflow revision `3363f7799a41e0035014e6f3c1fd9a70de58f480` is running at
+https://github.com/possibilities/codex-viewer/actions/runs/34309506878 .
+Runner setup confirms Xcode 16.4 and passes, all workshop tests pass, and the
+native gate started at 2026-09-09 04:04:42 UTC. **Result pending**; this is not
+a gate receipt or a delivered update. The preceding trial exposed a canonical
+`/var` versus `/private/var` test-path mismatch, repaired in `3363f77`.
+Local validation also passes all 12 tests and `actionlint` passes.
+The earlier statement that outer publication was withheld describes the
+2026-09-08 stop; this explicitly authorized CI trial published the workshop
+while leaving its consumer pin unchanged and making its objects fetchable
+through the candidate branch.
