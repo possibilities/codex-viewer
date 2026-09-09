@@ -163,3 +163,13 @@ records are intentionally not copied into this public repository.
   contract, provenance, merge-only ownership exception, isolated native gate,
   publication checker, supervision declaration, and consumer update command.
   No upstream interval audited; no publication or installation performed.
+
+## Hosted gate trial — 2026-09-09
+
+The user authorized publishing the candidate for GitHub CI and making the
+repository public. Both `possibilities/codex-viewer` and `possibilities/codex`
+were already public; no visibility change is needed. The workshop now has a
+manually dispatched macOS gate using full Xcode and a source build of pinned
+V8. Candidate publication uses `viewer-ci/20260908-d1ed9d7b3a`, separate from
+`codex-viewer`. The existing consumer branch, pin and installation remain
+unchanged pending successful validation and terminal smoke.

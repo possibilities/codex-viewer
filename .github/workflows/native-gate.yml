@@ -1,0 +1,79 @@
+name: Native viewer gate
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_sha:
+        description: Full commit SHA from possibilities/codex to validate
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: native-viewer-${{ inputs.candidate_sha }}
+  cancel-in-progress: false
+jobs:
+  gate:
+    runs-on: macos-15
+    timeout-minutes: 360
+    env:
+      CARGO_BUILD_JOBS: '2'
+      CARGO_INCREMENTAL: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      V8_FROM_SOURCE: '1'
+      PYTHON: python3
+      CODEX_VIEWER_GATE_TARGET_DIR: ${{ runner.temp }}/viewer-target
+      CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Validate candidate identity
+        shell: bash
+        run: '[[ "$CANDIDATE_SHA" =~ ^[0-9a-f]{40}$ ]]'
+      - uses: actions/checkout@v4
+        with:
+          repository: possibilities/codex
+          ref: ${{ inputs.candidate_sha }}
+          path: candidate
+          persist-credentials: false
+      - name: Prepare named candidate and build tools
+        shell: bash
+        run: |
+          git -C candidate switch -c ci-candidate
+          test "$(git -C candidate rev-parse HEAD)" = "$CANDIDATE_SHA"
+          xcodebuild -version
+          df -h
+          brew install just cargo-nextest llvm
+          echo "LIBCLANG_PATH=$(brew --prefix llvm)/lib" >> "$GITHUB_ENV"
+          rustup show
+      - name: Workshop validation
+        run: ./tests/validate.sh
+      - name: Native gate
+        shell: bash
+        run: |
+          set -o pipefail
+          ./scripts/gate.sh --worktree "$PWD/candidate" 2>&1 | tee "$RUNNER_TEMP/native-gate.log"
+      - name: Retain diagnostics
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/viewer-evidence"
+          cp "$RUNNER_TEMP/native-gate.log" "$RUNNER_TEMP/viewer-evidence/" 2>/dev/null || true
+          git -C candidate diff > "$RUNNER_TEMP/viewer-evidence/candidate.diff"
+          git -C candidate status --short > "$RUNNER_TEMP/viewer-evidence/candidate-status.txt"
+          printf 'candidate=%s\nworkflow=%s\nrun=%s\n' "$CANDIDATE_SHA" "$GITHUB_SHA" "$GITHUB_RUN_ID" > "$RUNNER_TEMP/viewer-evidence/identity.txt"
+          df -h > "$RUNNER_TEMP/viewer-evidence/disk.txt"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: viewer-evidence-${{ inputs.candidate_sha }}
+          path: ${{ runner.temp }}/viewer-evidence
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: viewer-release-${{ inputs.candidate_sha }}
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/viewer-target/release/codex-viewer
+            ${{ runner.temp }}/viewer-target/viewer-gate.txt

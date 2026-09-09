@@ -218,3 +218,33 @@ establish which source revision produced an old binary.
 Report outcome, upstream reviewed, feature dispositions, gate evidence,
 published viewer commit, outer pin, and installation separately. A failed
 publication check or unfinished audit stays visible in the scratchpad.
+
+## Hosted gate trial
+
+The 2026-09-09 request authorizes publishing CI candidates separately from the
+consumer branch. Both repositories are public. A candidate may be pushed,
+without force, to a new `viewer-ci/<cycle>-<short-sha>` branch in
+`possibilities/codex`; preserve existing refs. This is validation publication,
+not consumer promotion. Push the candidate first so the existing outer pin's
+objects are fetchable, then publish the workshop workflow to outer `main`.
+
+Dispatch the workshop's `native-gate.yml` with the exact full `candidate_sha`:
+
+```sh
+gh workflow run native-gate.yml --repo possibilities/codex-viewer \
+  -f candidate_sha="$candidate_sha"
+```
+
+The trial uses a macOS 15 runner with full Xcode, builds the pinned V8 from
+source, and executes `scripts/gate.sh` unchanged. It reduces debug information
+and disables incremental compilation to conserve runner disk. Logs, candidate
+diff/status, and run identities are retained on failure; a successful run also
+uploads the release binary and gate receipt. Record the run URL and actual
+outcome in the scratchpad. A queued or running job is not a successful gate.
+
+Only a successful exact-candidate run can substitute for the local automated
+gate. Verify its receipt, workflow revision and binary digest; local terminal
+smoke remains required before consumer promotion. Keep the original upstream
+snapshot and public consumer-head check for the maintenance cycle. Do not move
+the consumer branch or install an artifact just because CI was dispatched.
+This route remains a trial until a full run succeeds.
