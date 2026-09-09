@@ -88,6 +88,12 @@ records are intentionally not copied into this public repository.
 
 ## History
 
+- **2026-09-08 — invocation correction.** Bare `/maintain` selects this
+  workshop from the current repository. The shared skill now routes the
+  declared merge-only model to its own procedure; the user supplies no
+  branch reminder or project argument. AgentGuidance commit `f504357` was
+  synced through AgentStart and verified in installed Codex and Claude skills.
+  No maintenance cycle run by this change.
 - **2026-09-08 — workshop reconstruction.** Established the behavioral
   contract, provenance, merge-only ownership exception, isolated native gate,
   publication checker, supervision declaration, and consumer update command.

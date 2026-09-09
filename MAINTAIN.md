@@ -5,6 +5,10 @@ the viewer's required behavior, maintenance gate, launcher, and exact consumer
 pin. [SCRATCHPAD.md](SCRATCHPAD.md) records observed state and unresolved
 delivery work; it does not redefine this contract.
 
+Invoke **`/maintain` with no arguments from this repository**. The shared
+skill selects this contract's merge-only procedure automatically; no project
+name or branch-policy reminder is required.
+
 ## Purpose
 
 Keep a standalone, chromeless, read-only viewer built from Codex's native
@@ -49,9 +53,9 @@ not a goal. Preserve the behavior below through upstream changes.
 - Mirror branch: **none owned by this workshop**. `upstream/main` is a fetched
   upstream reference, not a publication target. The old local `main` in the
   submodule is historical state; do not turn it into a mirror in passing.
-- These are deliberate exceptions to the shared maintain skill's rebased
-  integration and mirror transaction. Follow its capture, semantic audit,
-  gate, and state-reporting discipline, but use the merge and single-branch
+- This selects the shared maintain skill's merge-only procedure rather than
+  its rebased integration and mirror transaction. Follow its capture, semantic
+  audit, gate, and state-reporting discipline, but use the merge and single-branch
   publication procedure below. **Do not invoke its shared namespace script**:
   it can rewrite history and move refs this workshop does not own. See
   [ADR 0002](docs/adr/0002-maintain-the-viewer-as-a-workshop.md).

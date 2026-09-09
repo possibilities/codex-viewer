@@ -103,6 +103,9 @@ The launcher follows `.build/codex-viewer`, so it continues to use the exact bin
 
 ## Updating Codex
 
+Run `/maintain` with no arguments from this repository. The workshop contract
+selects the branch model, checks, and consumer steps automatically.
+
 Follow [MAINTAIN.md](MAINTAIN.md) for the feature inventory, upstream audit,
 candidate gate, and consumer handover. The viewer branch keeps its published
 history through upstream merges. This workshop shares `possibilities/codex`

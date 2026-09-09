@@ -6,6 +6,10 @@ terms, [MAINTAIN.md](MAINTAIN.md) for the fork contract, and the
 Read [SCRATCHPAD.md](SCRATCHPAD.md) for current state; never infer a completed
 upstream audit or published pin from a successful old build.
 
+Bare `/maintain` in this repository runs the cycle declared in `MAINTAIN.md`.
+Resolve its merge-only model and local entrypoints from that file; the user
+does not need to repeat the project name, branch rules, or extra arguments.
+
 - Keep this repository focused on the top-level `codex-viewer` launcher and maintained-fork workflow.
 - `codex/` is a submodule of `possibilities/codex`, pinned to its public `codex-viewer` branch.
 - Read and follow `codex/AGENTS.md` before changing code inside the submodule.
