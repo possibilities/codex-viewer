@@ -1,6 +1,6 @@
 # Codex Viewer maintenance state
 
-## Initial maintenance audit — 2026-09-08; delivery pending
+## Initial maintenance audit — 2026-09-08; delivery blocked
 
 Audited-upstream frontier: `2ce38ae6d84a0aa96768742a5ac888a02ff622c7`.
 Read all 968 commits in the initial interval
@@ -30,7 +30,7 @@ retirement, upstream offer, or unresolved product decision.
 Totals: six keep, two fixture repairs, zero retire. Candidate branch
 `maintain/viewer-20260908` in `/Volumes/Scratch/codex-viewer-maintain-20260908`
 merges the fixed upstream target and preserves the unpublished local viewer
-commits. Full native gate is in progress. The first run had 6,107 passes,
+commits. Full native gate is blocked; no release receipt was produced. The first run had 6,107 passes,
 44 failures and seven skips: missing runtime binaries, inherited `NO_COLOR`,
 personal Git excludes, and a time-dependent snapshot were diagnosed.
 Focused checks confirm all four cursor failures disappear without `NO_COLOR`
@@ -39,9 +39,31 @@ The workshop gate now builds its runtime helpers and isolates these test inputs.
 
 Cycle evidence is local at `.git/maintain/20260908-cycle/`, including full
 commit messages, boundary review, gate logs and the feature ledger.
+The revised prerequisite build fails because V8 150.4.0 publishes no
+`librusty_v8_ptrcomp_sandbox_release_aarch64-apple-darwin.a.gz` archive (HTTP
+404, confirmed against the release asset list). The documented
+`V8_FROM_SOURCE=1 PYTHON=python3` fallback also fails: Chromium's SDK discovery
+requires full Xcode, while this machine has only Command Line Tools. Logs:
+`gate-isolated.log`, `gate-v8-source.log`, `v8-release-assets.json`.
+A matching sandbox-enabled archive or full Xcode/source-build prerequisites
+are needed before another complete gate can run. No dependency or sandbox
+configuration was weakened to bypass this failure.
+
 Publication, consumer pin update, release receipt, terminal smoke and
-installation are pending. The prior publication, pin and selected binary remain
+installation were not performed. The prior publication, pin and selected binary remain
 unchanged; the known publication gap below has not yet been resolved.
+The final remote-head read still reports `924709511326890e9a12ef30e93e557077c37a06`;
+the outer pin remains `d6ce3c6a703495d1abe00004074143880ffb79a8` and the selected
+binary remains `/Volumes/Scratch/codex-viewer-target/release/codex-viewer`.
+All captured fork heads remain unchanged. Supervision passes; pin reconciliation
+still rejects the known unpublished pin. Candidate `d1ed9d7b3a47925a39887ca511c0d0a22cb63104`
+and its clean worktree are retained for recovery. On that exact candidate,
+all 20 selected viewer/voice/rendering and Exploring snapshot tests pass
+(`final-focused.log`), and `just fmt` makes no changes. Workshop validation
+passes all 12 tests; launcher help passes. The full automated gate remains
+failed, and lint/fix and release steps were not reached. Workshop changes are committed
+locally; outer publication is withheld while its pinned inner commit remains
+unpublished.
 
 ## Baseline — reconstructed 2026-09-08
 
