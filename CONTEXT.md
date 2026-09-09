@@ -1,14 +1,25 @@
 # Codex Viewer context
 
+**Workshop** — This repository owns the viewer fork's behavioral contract,
+maintenance gate, launcher and consumer pin. `MAINTAIN.md` specifies required
+behavior; `SCRATCHPAD.md` records current delivery and audit evidence.
+_Avoid_: second renderer, Codex mirror.
+
 **Launcher** — This repository's `codex-viewer` entrypoint, which selects the
 tested native viewer build. The implementation belongs to the maintained Codex
 fork rather than a second transcript renderer here.
 _Avoid_: app-server, harness.
 
 **Viewer fork** — The public `codex-viewer` branch of `possibilities/codex`,
-updated without rewriting published history. The outer repository binds an exact
-commit through the `codex/` submodule.
-_Avoid_: detached patch, integration branch.
+updated without rewriting published history and pinned through `codex/`.
+It fills the workshop integration role; the shared fork's literal `integration`
+branch is outside this workshop.
+_Avoid_: detached patch, rebased integration stack.
+
+**Audited-upstream frontier** — The exact upstream commit through which a
+complete maintenance review assigned every carried behavior a disposition.
+An upstream merge, successful build, or newer outer pin does not advance it.
+_Avoid_: merge base, latest tested upstream.
 
 **Outer pin** — The committed submodule revision selecting the native viewer
 implementation for consumers. Its corresponding inner commit must be published

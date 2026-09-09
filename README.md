@@ -2,7 +2,12 @@
 
 `codex-viewer` is a chromeless, read-only terminal viewer for saved and ongoing [Codex](https://github.com/openai/codex) sessions and explicit AgentVoice recordings. It renders the native Codex conversation cells without a composer or other harness chrome, follows new conversation entries in real time, and keeps manual scroll position until you return to the tail.
 
-The viewer implementation lives on the [`codex-viewer`](https://github.com/possibilities/codex/tree/codex-viewer) branch of the public Codex fork. This repository provides the top-level `codex-viewer` command and pins a tested Codex revision through the `codex/` submodule.
+This repository is the workshop for the viewer fork: it owns the top-level
+`codex-viewer` command, an exact `codex/` submodule pin, and the behavior and
+checks required to maintain it. The implementation lives on the public
+[`codex-viewer`](https://github.com/possibilities/codex/tree/codex-viewer)
+branch. [MAINTAIN.md](MAINTAIN.md) is the maintenance contract;
+[SCRATCHPAD.md](SCRATCHPAD.md) records the current baseline and delivery gaps.
 
 ## Install from source
 
@@ -47,7 +52,7 @@ The recorder prints the file path. Open it in another terminal:
 
 ```bash
 codex-viewer --voice-jsonl ~/voice-recordings/myapp/<thread-id>.jsonl --follow
-# Saved playback:
+# Saved viewing:
 codex-viewer --voice-jsonl ~/voice-recordings/myapp/<thread-id>.jsonl
 ```
 
@@ -98,39 +103,31 @@ The launcher follows `.build/codex-viewer`, so it continues to use the exact bin
 
 ## Updating Codex
 
-The submodule's `origin` is the public fork. Add the canonical OpenAI repository as `upstream` once in a development checkout:
+Follow [MAINTAIN.md](MAINTAIN.md) for the feature inventory, upstream audit,
+candidate gate, and consumer handover. The viewer branch keeps its published
+history through upstream merges. This workshop shares `possibilities/codex`
+with other projects and owns only its `codex-viewer` branch.
+
+Add upstream once if it is absent, then configure workshop discovery:
 
 ```bash
 git -C codex remote add upstream https://github.com/openai/codex.git
+./scripts/reconcile-branches.sh --configure-supervision
+./scripts/reconcile-branches.sh --check-supervision
 ```
 
-Update the maintained viewer branch without rewriting its history:
+Inspect the model or verify that the committed pin is publicly fetchable:
 
 ```bash
-cd codex
-git switch codex-viewer
-git pull --ff-only origin codex-viewer
-git fetch upstream
-git merge upstream/main
-
-cd codex-rs
-just test -p codex-tui session_viewer
-just test -p codex-app-server turns_list_includes_streaming_assistant_text_in_latest_page
-just fix -p codex-tui
-just fix -p codex-app-server
-just fmt
-cd ../..
-
-./scripts/setup.sh
-./bin/codex-viewer --help
-
-git -C codex push origin codex-viewer
-git add codex
-git commit -m "chore: update Codex viewer core"
-git push
+./scripts/reconcile-branches.sh --print-model
+./scripts/reconcile-branches.sh --check
 ```
 
-The outer repository pins an exact Codex commit. Consumers do not move to a newer fork revision until that submodule pointer is reviewed and committed here.
+The checker is read-only and needs Python 3 and Git. It never fetches, resets,
+renames, or pushes branches. A missing published-tip object requires fetching
+`origin codex-viewer` before retrying. An unpublished pin must be resolved
+before publishing an outer update. Consumers do not advance until the exact
+inner commit is published and the outer pointer is reviewed and committed.
 
 ## Live-update boundary
 
